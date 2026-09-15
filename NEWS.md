@@ -1,4 +1,4 @@
-# BatchVaria 0.99.1
+# BatchVaria 0.99.2
 
 Initial Bioconductor submission, revised in response to package review.
 
@@ -13,7 +13,8 @@ Initial Bioconductor submission, revised in response to package review.
   `provenance()` replaces `summary()`.
 
 * What the original class's validity method checked is now checked at the point of
-  use, by an internal `.check_se()` that every public function calls:
+  use, by an internal `.check_se()` that every public function taking an
+  object runs before using it:
   ledger entries well formed, and the assays and `colData` columns they
   name present. This is strictly stronger than the validity method was.
   S4 validity runs at construction and on an explicit `validObject()` and
@@ -61,6 +62,12 @@ Initial Bioconductor submission, revised in response to package review.
   that lineage to work out which assay a comparison should be made
   against, so no assay has to be named `raw`.
 
+  It reports a ledger entry without a `timestamp` as `NA` rather than
+  stopping: the requirements do not make that field mandatory, so an entry
+  written outside the package may lack it. Formulas are reported by their
+  canonical key, one row per entry; a formula too wide for `deparse()` to
+  keep on one line previously appeared as several rows.
+
 * `profileVariance()` records every decomposition in a variance ledger keyed
   on assay, method, formula and term. Formula keys are canonical, so
   `~ batch + group` and `~ group + batch` are recognised as one model while
@@ -68,7 +75,9 @@ Initial Bioconductor submission, revised in response to package review.
 
 * `varianceHistory()` and `varianceResults()` expose the ledger, the latter
   in tidy form with the canonical formula and each engine's own diagnostic
-  columns.
+  columns. `varianceHistory()` returns it unprocessed, and now checks its
+  input like every other function that takes an object; it previously
+  passed anything straight to `metadata()`.
 
 ## Variance profiling
 
