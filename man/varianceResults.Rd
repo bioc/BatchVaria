@@ -19,8 +19,8 @@ A data.frame containing variance decomposition results
 in long format.
 }
 \description{
-Extracts variance decomposition results stored in the
-the object's \code{metadata()}.
+Extracts variance decomposition results stored in the object's
+\code{metadata()}.
 }
 \examples{
 set.seed(1)

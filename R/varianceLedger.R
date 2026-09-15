@@ -319,7 +319,6 @@ varianceTable <- function(
     )
 }
 
-#'
 #' Summarise variance change vs raw for a model term
 #'
 #' @param object A \code{SummarizedExperiment} meeting BatchVaria's

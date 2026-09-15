@@ -49,4 +49,5 @@ test_that("anything that is not a SummarizedExperiment is rejected", {
     expect_error(assayVariance(list()), "must be a SummarizedExperiment")
     expect_error(provenance(data.frame()), "must be a SummarizedExperiment")
     expect_error(varianceResults(NULL), "must be a SummarizedExperiment")
+    expect_error(varianceHistory(NULL), "must be a SummarizedExperiment")
 })

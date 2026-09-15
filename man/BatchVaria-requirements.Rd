@@ -10,9 +10,9 @@ function; \code{\link{exampleBatchVaria}} returns an object that
 meets them.
 }
 \description{
-Every public function in the package opens by calling the internal
-\code{.check_se()}, which is the whole of what BatchVaria requires of
-an object. There is no container class: an object is acceptable if it
+Every public function that takes an object checks it with the
+internal \code{.check_se()} before using it, and that check is the
+whole of what BatchVaria requires of an object. An object is acceptable if it
 is a \code{SummarizedExperiment} whose ledgers, if it has any, are
 well formed and refer to things it still has.
 }

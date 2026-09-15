@@ -11,7 +11,14 @@ varianceHistory(object)
 requirements. See \link{BatchVaria-requirements}.}
 }
 \value{
-list of variance analysis blocks
+The variance ledger, \code{metadata(object)$variance_history},
+unprocessed: a list with one entry per recorded decomposition, or
+\code{NULL} if nothing has been profiled. Entries the package writes
+carry \code{assay}, \code{method}, \code{formula},
+\code{formula_key}, \code{result}, \code{fingerprint} and
+\code{timestamp}; only \code{assay}, \code{method} and \code{result}
+are required of an entry (see \link{BatchVaria-requirements}). Use
+\code{\link{varianceResults}} for the results as one data.frame.
 }
 \description{
 Access variance profiling history

@@ -3,7 +3,14 @@
 #' @param object A \code{SummarizedExperiment} meeting BatchVaria's
 #'   requirements. See \link{BatchVaria-requirements}.
 #'
-#' @return list of variance analysis blocks
+#' @return The variance ledger, \code{metadata(object)$variance_history},
+#'   unprocessed: a list with one entry per recorded decomposition, or
+#'   \code{NULL} if nothing has been profiled. Entries the package writes
+#'   carry \code{assay}, \code{method}, \code{formula},
+#'   \code{formula_key}, \code{result}, \code{fingerprint} and
+#'   \code{timestamp}; only \code{assay}, \code{method} and \code{result}
+#'   are required of an entry (see \link{BatchVaria-requirements}). Use
+#'   \code{\link{varianceResults}} for the results as one data.frame.
 #'
 #' @examples
 #' set.seed(1)
@@ -13,6 +20,8 @@
 #'
 #' @export
 varianceHistory <- function(object) {
+    .check_se(object)
+
     md <- S4Vectors::metadata(object)
     md$variance_history
 }
@@ -109,11 +118,10 @@ assayVariance <- function(object, assays = NULL) {
     out
 }
 
-#'
 #' Retrieve variance decomposition results
 #'
-#' Extracts variance decomposition results stored in the
-#' the object's \code{metadata()}.
+#' Extracts variance decomposition results stored in the object's
+#' \code{metadata()}.
 #'
 #' @param object A \code{SummarizedExperiment} meeting BatchVaria's
 #'   requirements. See \link{BatchVaria-requirements}.
