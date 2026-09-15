@@ -76,7 +76,7 @@ provenance <- function(object) {
                         paste(entry$preserve, collapse = ", ")
                     },
                     no_op = isTRUE(entry$no_op),
-                    timestamp = as.character(entry$timestamp),
+                    timestamp = .ledgerTimestamp(entry$timestamp),
                     stringsAsFactors = FALSE
                 )
             })
@@ -102,9 +102,12 @@ provenance <- function(object) {
                 data.frame(
                     step = i,
                     assay = entry$assay,
-                    formula = deparse(entry$formula),
+                    ## deparse() splits a formula over 60 characters
+                    ## into several strings, which data.frame() would
+                    ## recycle into several rows for one entry
+                    formula = .entryFormulaKey(entry),
                     methods = entry$method,
-                    timestamp = as.character(entry$timestamp),
+                    timestamp = .ledgerTimestamp(entry$timestamp),
                     stringsAsFactors = FALSE
                 )
             })
@@ -123,4 +126,14 @@ provenance <- function(object) {
             variance_profiles = varianceProfileTable
         )
     )
+}
+
+## A ledger timestamp as a single string. timestamp is not a field the
+## requirements make mandatory, so an entry written outside the package may
+## lack one; that should read as unknown rather than stop the report.
+.ledgerTimestamp <- function(x) {
+    if (length(x) == 0L) {
+        return(NA_character_)
+    }
+    as.character(x)[1L]
 }

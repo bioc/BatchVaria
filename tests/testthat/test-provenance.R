@@ -62,3 +62,48 @@ test_that("provenance reports empty ledgers rather than failing", {
     expect_null(p$corrections)
     expect_null(p$variance_profiles)
 })
+
+
+test_that("provenance tolerates ledger entries without a timestamp", {
+    ## timestamp is not among the fields BatchVaria requires of an entry,
+    ## so an entry written outside the package may lack one.
+    set.seed(1)
+    bv <- exampleBatchVaria(nGenes = 60, nSamples = 8)
+    bv <- runCorrection(bv, method = "combat", batch = "batch")
+    bv <- profileVariance(bv, ~batch, assayName = "raw")
+
+    md <- S4Vectors::metadata(bv)
+    md$correction_history[[1]]$timestamp <- NULL
+    md$variance_history[[1]]$timestamp <- NULL
+    S4Vectors::metadata(bv) <- md
+
+    capture.output(p <- provenance(bv))
+
+    expect_equal(nrow(p$corrections), 1L)
+    expect_true(is.na(p$corrections$timestamp))
+    expect_equal(nrow(p$variance_profiles), 1L)
+    expect_true(is.na(p$variance_profiles$timestamp))
+})
+
+
+test_that("provenance reports a long formula on a single row", {
+    set.seed(1)
+    bv <- exampleBatchVaria(nGenes = 60, nSamples = 8)
+
+    long <- ~ batch + group + batch:group + an_unusually_long_covariate_name +
+        another_long_covariate
+    ## the premise: this formula is wide enough for deparse() to split
+    expect_gt(length(deparse(long)), 1L)
+
+    res <- data.frame(
+        source = "anova",
+        term = c("model", "residual"),
+        variance_fraction = c(0.3, 0.7)
+    )
+    bv <- recordVariance(bv, "raw", long, res, method = "anova")
+
+    capture.output(p <- provenance(bv))
+
+    expect_equal(nrow(p$variance_profiles), 1L)
+    expect_length(p$variance_profiles$formula, 1L)
+})
